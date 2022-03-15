@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    #info {
+  position: absolute;
+  top: 2%;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  color: #ffff00
+}
+
+body {
+  overflow: hidden;
+}
+
+</style>
+<body>
+    <div id="info">My Second Three.js
+        <br> turning, buttons, orbitControls, resize
+        <br>
+        <br>
+        <button id="toggle" style="width:20%">Toggle Turn</button>
+      </div>
+      <script src="https://threejs.org/build/three.min.js"></script>
+      <script src="https://threejs.org/examples/js/controls/OrbitControls.js">
+      </script>
+      <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+      
+    <script>
+var scene, renderer, camera;
+var mesh, angle = 0;
+var cube,chimney;
+var train;
+  turn = false;
+
+init();
+animate();
+
+$("#toggle").click(function() {
+  turn = !turn;
+  if(turn)
+  $("#toggle").text("stop");
+  else
+  $("#toggle").text("turn");
+});
+function makeTrain(){
+        var train=new THREE.Group();
+
+        var cubeGeometry =new THREE.BoxGeometry(3,1,2);
+        var cubeMaterial=new THREE.MeshNormalMaterial();
+        cube=new THREE.Mesh(cubeGeometry,cubeMaterial);
+        chimney=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,2,20),new THREE.MeshNormalMaterial());
+        train.add(cube,chimney);
+        cube.position.y=0.5;
+        chimney.position.y=1;
+        chimney.position.x=-0.75;
+        return train;
+
+}
+function init() {
+  
+  renderer = new THREE.WebGLRenderer();
+  var width=window.innerWidth;
+  var height=window.innerHeight;
+  renderer.setSize(width, height);
+  renderer.setClearColor(0x888888);
+  document.body.appendChild(renderer.domElement);
+
+  scene = new THREE.Scene();
+  var gridXZ = new THREE.GridHelper(20, 20, 'red', 'white');
+  scene.add(gridXZ);
+  var axes=new THREE.AxesHelper(5);
+  scene.add(axes);
+
+  camera = new THREE.PerspectiveCamera(35, width / height, 1, 100);
+  camera.position.y = 16;
+  camera.position.z = 40;
+  camera.lookAt(new THREE.Vector3(0,0,0));
+  
+  let controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+  
+
+  
+train=makeTrain();
+scene.add(train);
+  
+
+  window.addEventListener('resize', onWindowResize, false);
+}
+
+function onWindowResize() {
+    var width=window.innerWidth;
+  var height=window.innerHeight;
+  camera.aspect = width /height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(width, height);
+}
+
+function animate() {
+  if (turn)
+    angle += 0.01;
+  train.position.set(8*Math.cos(angle),0,-8*Math.sin(angle));
+  train.rotation.y=angle+1.5*Math.PI;
+
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+function render(){
+    renderer.render(scene,camera);
+}
+    </script>
+</body>
+</html>
