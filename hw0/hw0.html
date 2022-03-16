@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    #info {
+  position: absolute;
+  top: 2%;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  color: #ffff00
+}
+
+body {
+  overflow: hidden;
+}
+
+</style>
+<body>
+    <div id="info">Thomas the Tank Engine OBJ
+        <br> 
+        <br>
+        <br>
+        <button id="toggle" style="width:20%">Toggle Turn</button>
+      </div>
+      <script src="https://threejs.org/build/three.min.js"></script>
+      <script src="https://threejs.org/examples/js/controls/OrbitControls.js">
+      </script>
+      <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+      
+    <script>
+var scene, renderer, camera;
+var mesh, angle = 0;
+var cube,chimney,wheel,wheels,trackwood;
+var train;
+var clock=new THREE.Clock();
+  turn = false;
+
+init();
+animate();
+
+$("#toggle").click(function() {
+  turn = !turn;
+  if(turn)
+  $("#toggle").text("stop");
+  else
+  $("#toggle").text("turn");
+});
+function makeTrain(){
+        var train=new THREE.Group();
+
+        var cubeGeometry =new THREE.BoxGeometry(3,1,2);
+        var cubeMaterial=new THREE.MeshNormalMaterial();
+        cube=new THREE.Mesh(cubeGeometry,cubeMaterial);
+        chimney=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,2,20),new THREE.MeshNormalMaterial());
+        wheel=new THREE.Mesh(new THREE.CylinderGeometry(0.25,0.25,2.4,20),new THREE.MeshNormalMaterial());
+        wheels=new THREE.Mesh(new THREE.CylinderGeometry(0.25,0.25,2.4,20),new THREE.MeshNormalMaterial());
+
+        train.add(cube,chimney,wheel,wheels);
+        cube.position.y=0.5;
+        chimney.position.y=1;
+        chimney.position.x=-0.75;
+        wheel.rotation.x=1.6;
+        wheel.position.y=0.2;
+        wheel.position.x=-0.75;
+        wheels.rotation.x=1.6;
+        wheels.position.y=0.2;
+        wheels.position.x=0.75;
+        return train;
+
+}
+function makeTrack(){
+  var points=[];
+  var pointss=[];
+  var linegroup=new THREE.Group();
+  var theta=0;
+  //外圈線
+  for(var i=0;i<1000;i++)
+  {
+    theta=i*Math.PI*2/100;
+    var point=new THREE.Vector3(9*Math.cos(theta),0,9*Math.sin(theta));
+    points.push(point);
+    
+  }
+  var geom=new THREE.BufferGeometry().setFromPoints(points);
+  var line=new THREE.Line(geom,new THREE.LineBasicMaterial({color:0xff0000}));
+  //內圈線
+  for(var i=0;i<1000;i++)
+  {
+    theta=i*Math.PI*2/100;
+    var point2=new THREE.Vector3(7*Math.cos(theta),0,7*Math.sin(theta));
+    pointss.push(point2); 
+  }
+  var geoms=new THREE.BufferGeometry().setFromPoints(pointss);
+  var lines=new THREE.Line(geoms,new THREE.LineBasicMaterial({color:0xff0000}));
+
+  linegroup.add(line,lines);
+  return linegroup;
+}
+
+function makeTracks(){
+var track=new THREE.Group();
+var cubeGeometry =new THREE.BoxGeometry(2.3,0.1,0.5);
+var cubeMaterial=new THREE.MeshNormalMaterial();
+
+//trackwood.position.x=8;
+for(var i=0;i<50;i+=1)
+{
+  trackwood=new THREE.Mesh(cubeGeometry,cubeMaterial);
+  trackwood.position.set(8*Math.cos(i),0,-8*Math.sin(i));
+trackwood.rotation.y=i+Math.PI;
+track.add(trackwood);
+
+}
+
+
+return track;
+}
+
+function init() {
+  
+  renderer = new THREE.WebGLRenderer();
+  var width=window.innerWidth;
+  var height=window.innerHeight;
+  renderer.setSize(width, height);
+  renderer.setClearColor(0x888888);
+  document.body.appendChild(renderer.domElement);
+
+  scene = new THREE.Scene();
+  var gridXZ = new THREE.GridHelper(20, 20, 'red', 'white');
+  scene.add(gridXZ);
+  var axes=new THREE.AxesHelper(5);
+  scene.add(axes);
+
+  camera = new THREE.PerspectiveCamera(35, width / height, 1, 100);
+  camera.position.y = 16;
+  camera.position.z = 40;
+  camera.lookAt(new THREE.Vector3(0,0,0));
+  
+  let controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+  
+
+  
+train=makeTrain();
+scene.add(train);
+scene.add(makeTrack());
+scene.add(makeTracks());
+
+  window.addEventListener('resize', onWindowResize, false);
+}
+
+function onWindowResize() {
+    var width=window.innerWidth;
+  var height=window.innerHeight;
+  camera.aspect = width /height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(width, height);
+}
+
+function animate() {
+var dt=clock.getDelta();
+  if (turn)
+    angle += Math.PI/15 *dt;
+  train.position.set(8*Math.cos(angle),0,-8*Math.sin(angle));
+  train.rotation.y=angle+1.5*Math.PI;
+  wheel.rotation.y=angle*10;
+  wheels.rotation.y=angle*10;
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+function render(){
+    renderer.render(scene,camera);
+}
+    </script>
+</body>
+</html>
