@@ -36,7 +36,7 @@ body {
     <script>
 var scene, renderer, camera;
 var mesh, angle = 0;
-var cube,chimney;
+var cube,chimney,wheel,wheels,trackwood;
 var train;
   turn = false;
 
@@ -57,13 +57,61 @@ function makeTrain(){
         var cubeMaterial=new THREE.MeshNormalMaterial();
         cube=new THREE.Mesh(cubeGeometry,cubeMaterial);
         chimney=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,2,20),new THREE.MeshNormalMaterial());
-        train.add(cube,chimney);
+        wheel=new THREE.Mesh(new THREE.CylinderGeometry(0.25,0.25,2.4,20),new THREE.MeshNormalMaterial());
+        wheels=new THREE.Mesh(new THREE.CylinderGeometry(0.25,0.25,2.4,20),new THREE.MeshNormalMaterial());
+
+        train.add(cube,chimney,wheel,wheels);
         cube.position.y=0.5;
         chimney.position.y=1;
         chimney.position.x=-0.75;
+        wheel.rotation.x=1.6;
+        wheel.position.y=0.2;
+        wheel.position.x=-0.75;
+        wheels.rotation.x=1.6;
+        wheels.position.y=0.2;
+        wheels.position.x=0.75;
         return train;
 
 }
+function makeTrack(){
+  var points=[];
+  var pointss=[];
+  var linegroup=new THREE.Group();
+  var theta=0;
+  //外圈線
+  for(var i=0;i<1000;i++)
+  {
+    theta=i*Math.PI*2/100;
+    var point=new THREE.Vector3(9*Math.cos(theta),0,9*Math.sin(theta));
+    points.push(point);
+    
+  }
+  var geom=new THREE.BufferGeometry().setFromPoints(points);
+  var line=new THREE.Line(geom,new THREE.LineBasicMaterial({color:0xff0000}));
+  //內圈線
+  for(var i=0;i<1000;i++)
+  {
+    theta=i*Math.PI*2/100;
+    var point2=new THREE.Vector3(7*Math.cos(theta),0,7*Math.sin(theta));
+    pointss.push(point2); 
+  }
+  var geoms=new THREE.BufferGeometry().setFromPoints(pointss);
+  var lines=new THREE.Line(geoms,new THREE.LineBasicMaterial({color:0xff0000}));
+  
+  linegroup.add(line,lines);
+  return linegroup;
+}
+
+function makeTracks(){
+var track=new THREE.Group();
+var cubeGeometry =new THREE.BoxGeometry(2,0.1,1);
+var cubeMaterial=new THREE.MeshNormalMaterial();
+trackwood=new THREE.Mesh(cubeGeometry,cubeMaterial);
+track.add(trackwood);
+
+return track;
+}
+
 function init() {
   
   renderer = new THREE.WebGLRenderer();
@@ -91,7 +139,8 @@ function init() {
   
 train=makeTrain();
 scene.add(train);
-  
+scene.add(makeTrack());
+//scene.add(makeTracks());
 
   window.addEventListener('resize', onWindowResize, false);
 }
