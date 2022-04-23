@@ -100,8 +100,9 @@
 
             var loader = new THREE.TextureLoader();
             loader.setCrossOrigin('');
-            texture = loader.load('https://i.imgur.com/Vn4u7UG.png');
-
+            
+            texture = loader.load('steve.png');
+            
             head = buildHead(12.4, 12.4, 12.4);
             body = buildBody(12.4, 19.1, 6.2);
             body.add(head);
